@@ -1,4 +1,4 @@
-package edu.unifor.clysman;
+package edu.unifor.clysman.pagerank;
 
 import edu.unifor.clysman.linear.LinearAlgebra;
 import edu.unifor.clysman.linear.Matrix;
@@ -13,14 +13,23 @@ public class PageRank {
     }
 
     public Matrix calculate() {
-        Matrix h = linearAlgebra.dot(matrix, calculateInitialAuthorityVector());
-        double normalization = 1/linearAlgebra.norm(h);
+        Matrix initialAuthorityVector = initialAuthorityVector();
+        double scalar = calculateNormalizedScalar(initialAuthorityVector);
+        Matrix a = linearAlgebra.times(initialAuthorityVector, scalar);
 
-        return linearAlgebra.times(h, normalization);
+        Matrix transposed = linearAlgebra.transpose(this.matrix);
+        transposed = linearAlgebra.dot(transposed, this.matrix);
+
+        for (int i = 0; i < matrix.getRows(); i++) {
+            a = linearAlgebra.dot(transposed, a);
+            scalar = calculateNormalizedScalar(a);
+            a = linearAlgebra.times(a, scalar);
+        }
+
+        return a;
     }
 
-
-    private Matrix calculateInitialCenterVector() {
+    public Matrix initialCenterVector() {
         Matrix newMatrix = new Matrix(this.matrix.getRows(), 1);
 
         for (int i = 0; i < matrix.getRows(); i++) {
@@ -35,7 +44,7 @@ public class PageRank {
         return newMatrix;
     }
 
-    private Matrix calculateInitialAuthorityVector() {
+    public Matrix initialAuthorityVector() {
         Matrix newMatrix = new Matrix(this.matrix.getRows(), 1);
 
         for (int i = 0; i < matrix.getRows(); i++) {
@@ -48,5 +57,9 @@ public class PageRank {
         }
 
         return newMatrix;
+    }
+
+    private double calculateNormalizedScalar(Matrix matrix) {
+        return 1/linearAlgebra.norm(matrix);
     }
 }
