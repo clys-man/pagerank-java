@@ -2,14 +2,16 @@ package edu.unifor.clysman.pagerank;
 
 import edu.unifor.clysman.linear.Matrix;
 
+import java.util.List;
+
 public class RankingPrinter {
-    public static void print(Matrix m) {
+    public static void print(Matrix m, List<Page> pages) {
         for (int i = 0; i < m.getRows(); i++) {
-            System.out.println("Page " + (i + 1) + ": " + m.get(i, 0));
+            System.out.println("Page " + (i + 1) + ": " + pages.get(i).getName() + " - " + m.get(i, 0));
         }
     }
 
-    public static void printOrdered(Matrix m) {
+    public static void printOrdered(Matrix m, List<Page> pages) {
         for (int i = 0; i < m.getRows(); i++) {
             double max = m.get(i, 0);
             int index = i;
@@ -17,6 +19,7 @@ public class RankingPrinter {
                 if (m.get(j, 0) > max) {
                     max = m.get(j, 0);
                     index = j;
+                    pages.add(i, pages.remove(j));
                 }
             }
 
@@ -26,7 +29,7 @@ public class RankingPrinter {
                 m.set(index, temp);
             }
 
-            System.out.println("Page " + (i + 1) + ": " + m.get(i, 0));
+            System.out.println("Page " + (i + 1) + ": " + pages.get(i).getName() + " - " + m.get(i, 0));
         }
     }
 }
